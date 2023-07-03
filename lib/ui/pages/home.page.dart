@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:musik_audiomack/enums/actionMusic.enum.dart';
@@ -14,16 +15,21 @@ class _HomePageState extends State<HomePage> {
   late bool isPlayed;
   late double positionPlay;
   var logger = Logger(
-    printer: PrettyPrinter(),
+    printer: PrettyPrinter(
+      printTime: true,
+    ),
   );
   List<Musique> listesMusiques = [
-    Musique("Dip Doundou Guiss", "Damako Khar", "images/dip_cover.jpeg",
-        "assets/sons/dip/damako-khar.mp3"),
+    Musique("Dip Doundou Guiss", "Beut", "assets/images/dip_cover.jpeg",
+        "assets/audios/dip-beut-tlk.webm"),
+    Musique("Freeze Corleone", "Freeze Rael", "assets/images/dip_cover.jpeg",
+        "assets/audios/freeze-rael.webm"),
     Musique(
-        "Ninho", "Jefe", "images/ninhojefe.png", "assets/sons/ninho/jefe.mp3"),
-    Musique("Dip Doundou Guiss", "Beut", "images/dip_tlk.png",
-        "assets/sons/dip/beut.mp3"),
+        "Leys", "Si c'était le premier", "assets/images/dip_cover.jpeg", "assets/audios/leys-si-cetait-le-dernier.webm"),
+    Musique("Reptyle Music", "Weet", "assets/images/dip_cover.jpeg",
+        "assets/audios/reptyle-music-weet.mp3"),
   ];
+  var player = AudioPlayer();
   late Musique _playing;
   @override
   void initState() {
@@ -37,43 +43,53 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actionsIconTheme: const IconThemeData(
+          color: Colors.cyan
+        ),
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "Ma Musique",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: Colors.cyan,
+        backgroundColor: Colors.white,
       ),
-      backgroundColor: Colors.cyan,
-      // bottomNavigationBar: BottomNavigationBar(
-      //   items: const [
-      //     BottomNavigationBarItem(
-      //       tooltip: "Home",
-      //       icon: Icon(Icons.home,
-      //       color: Colors.deepOrange,
-      //       ),
-      //       label: "Home",
-      //       ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.feed,
-      //       color: Colors.deepOrange,
-      //       ),
-      //       label: "Feed"),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.library_music,
-      //       color: Colors.deepOrange,
-      //       ),
-      //       label: "My Library",
-      //       ),
-      //       BottomNavigationBarItem(
-      //       icon: Icon(Icons.music_note,
-      //       color: Colors.deepOrange,
-      //       ),
-      //       label: "Playlist",
-      //       ),
-      //   ],
-      // ),
+      backgroundColor: Colors.white,
+      bottomNavigationBar: BottomNavigationBar(
+        showUnselectedLabels: false,
+        showSelectedLabels: false,
+        selectedItemColor: Colors.white,
+        currentIndex: 0,
+        elevation: 0.0,
+        type: BottomNavigationBarType.shifting,
+        backgroundColor: Colors.deepOrange,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home,
+            color: Colors.deepOrange,
+            ),
+            label: "Home",  
+            ),
+          BottomNavigationBarItem(
+            tooltip: "Feed",
+            icon: Icon(Icons.feed,
+            color: Colors.deepOrange,
+            ),
+            label: "Feed"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_music,
+            color: Colors.deepOrange,
+            ),
+            label: "My Library",
+            ),
+            BottomNavigationBarItem(
+            icon: Icon(Icons.music_note,
+            color: Colors.deepOrange,
+            ),
+            label: "Playlist",
+            ),
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -90,17 +106,17 @@ class _HomePageState extends State<HomePage> {
                       _playing.imagePath,
                       fit: BoxFit.fitHeight,
                     ))),
-            textWithStyle(_playing.titre, 1.5, true),
-            textWithStyle(_playing.artiste, 1.0, true),
+            textWithStyle(_playing.titre, 2, true),
+            textWithStyle(_playing.artiste, 1.5, true),
             Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   textWithStyle("0:0", 1),
                   Expanded(
                     child: Slider(
-                      activeColor: Colors.orange,
+                      activeColor: Colors.deepOrange,
                       value: positionPlay,
                       onChanged: (value) {
                         setState(() {
@@ -120,8 +136,9 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 bouton(Icons.fast_rewind, 35, ActionMusic.rewind),
-                bouton(isPlayed == true ? Icons.pause : Icons.play_arrow, 35, ActionMusic.pause),
-                bouton(isPlayed == true ? Icons.pause : Icons.play_arrow, 35, isPlayed == true ActionMusic.pause),
+                bouton(isPlayed == true ? Icons.pause : Icons.play_arrow, 35,
+                    isPlayed == true ? ActionMusic.pause : ActionMusic.play),
+                bouton(Icons.fast_forward, 35, ActionMusic.forward),
               ],
             ),
           ],
@@ -137,25 +154,32 @@ class _HomePageState extends State<HomePage> {
       textScaleFactor: scal,
       style: TextStyle(
         fontFamily: "Cambria",
-        color: Colors.white,
+        color: Colors.cyan,
         fontWeight: isBold == true ? FontWeight.bold : FontWeight.normal,
       ),
     );
   }
 
-  IconButton bouton(IconData icone, double taille, ActionMusic actionMusic) {
+  IconButton bouton (IconData icone, double taille, ActionMusic actionMusic) {
     return IconButton(
         iconSize: taille,
-        color: Colors.orange,
+        color: Colors.deepOrange,
         onPressed: () {
           switch (actionMusic) {
             case ActionMusic.play:
               {
-                logger.i("play");
+                setState(() {
+                  isPlayed = !isPlayed;
+                });
+                player.setSourceUrl(_playing.urlSong);
+                logger.i("play ${_playing.urlSong}");
                 break;
               }
             case ActionMusic.pause:
               {
+                setState(() {
+                  isPlayed = !isPlayed;
+                });
                 logger.i("pause");
                 break;
               }
