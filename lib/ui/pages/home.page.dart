@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:musik_audiomack/datas/faker.dart';
 import 'package:musik_audiomack/enums/actionMusic.enum.dart';
 import 'package:musik_audiomack/models/musique.model.dart';
 
@@ -13,43 +14,32 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late bool isPlayed;
-  late double positionPlay;
+  late Duration positionPlay;
   var logger = Logger(
     printer: PrettyPrinter(
       printTime: true,
     ),
   );
-  List<Musique> listesMusiques = [
-    Musique("Dip Doundou Guiss", "Beut", "assets/images/dip_cover.jpeg",
-        "assets/audios/dip-beut-tlk.webm"),
-    Musique("Freeze Corleone", "Freeze Rael", "assets/images/dip_cover.jpeg",
-        "assets/audios/freeze-rael.webm"),
-    Musique(
-        "Leys", "Si c'était le premier", "assets/images/dip_cover.jpeg", "assets/audios/leys-si-cetait-le-dernier.webm"),
-    Musique("Reptyle Music", "Weet", "assets/images/dip_cover.jpeg",
-        "assets/audios/reptyle-music-weet.mp3"),
-  ];
-  var player = AudioPlayer();
+  late AudioPlayer player;
   late Musique _playing;
+  late double currentVolume;
+  late int currentMusiqueIndex;
+  List<Musique> listesMusiques = Faker.getMusiques();
   @override
   void initState() {
     super.initState();
-    positionPlay = 5.0;
-    isPlayed = false;
-    _playing = listesMusiques[0];
+    configurePlayer();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actionsIconTheme: const IconThemeData(
-          color: Colors.cyan
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        actionsIconTheme: const IconThemeData(color: Colors.cyan),
+        iconTheme: const IconThemeData(color: Colors.cyan),
         title: const Text(
           "Ma Musique",
-          style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -57,91 +47,146 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: false,
-        showSelectedLabels: false,
-        selectedItemColor: Colors.white,
+        // showSelectedLabels: false,
+        selectedItemColor: Colors.cyan,
         currentIndex: 0,
         elevation: 0.0,
         type: BottomNavigationBarType.shifting,
-        backgroundColor: Colors.deepOrange,
+        backgroundColor: Colors.cyan,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home,
-            color: Colors.deepOrange,
+            icon: Icon(
+              Icons.home,
+              color: Colors.cyan,
             ),
-            label: "Home",  
-            ),
+            label: "Home",
+          ),
           BottomNavigationBarItem(
-            tooltip: "Feed",
-            icon: Icon(Icons.feed,
-            color: Colors.deepOrange,
-            ),
-            label: "Feed"),
+              tooltip: "Feed",
+              icon: Icon(
+                Icons.feed,
+                color: Colors.cyan,
+              ),
+              label: "Feed"),
           BottomNavigationBarItem(
-            icon: Icon(Icons.library_music,
-            color: Colors.deepOrange,
+              tooltip: "search",
+              icon: Icon(
+                Icons.search,
+                color: Colors.cyan,
+              ),
+              label: "Feed"),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.library_music,
+              color: Colors.cyan,
             ),
             label: "My Library",
-            ),
-            BottomNavigationBarItem(
-            icon: Icon(Icons.music_note,
-            color: Colors.deepOrange,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.music_note,
+              color: Colors.cyan,
             ),
             label: "Playlist",
-            ),
+          ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Card(
-                elevation: 0.8,
-                child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.cyan,
-                      borderRadius: BorderRadius.circular(10),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Card(
+                  elevation: 0.8,
+                  child: Container(
+                      padding: const EdgeInsets.all(3),
+                      width: MediaQuery.of(context).size.height / 2.5,
+                      child: Image.asset(
+                        _playing.imagePath,
+                        fit: BoxFit.fitHeight,
+                      ))),
+              textWithStyle(_playing.titre, 2, true),
+              textWithStyle(_playing.artiste, 1.5, true),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    textWithStyle("0:0", 1),
+                    Expanded(
+                      child: Slider(
+                        activeColor: Colors.deepOrange,
+                        inactiveColor: Colors.cyan,
+                        value: positionPlay.inSeconds.toDouble(),
+                        onChanged: (value) {
+                          setState(() {
+                            positionPlay = Duration(seconds: value.toInt());
+                          });
+                          logger.d("$value playing");
+                        },
+                        max: 5,
+                        min: 0,
+                      ),
                     ),
-                    width: MediaQuery.of(context).size.height / 2.5,
-                    child: Image.asset(
-                      _playing.imagePath,
-                      fit: BoxFit.fitHeight,
-                    ))),
-            textWithStyle(_playing.titre, 2, true),
-            textWithStyle(_playing.artiste, 1.5, true),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
+                    textWithStyle("0:22", 1),
+                  ],
+                ),
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  textWithStyle("0:0", 1),
-                  Expanded(
-                    child: Slider(
-                      activeColor: Colors.deepOrange,
-                      value: positionPlay,
-                      onChanged: (value) {
-                        setState(() {
-                          positionPlay = value;
-                        });
-                        logger.d("$value playing");
-                      },
-                      max: 5,
-                      min: 0,
-                    ),
+                  bouton(Icons.volume_down, 30, ActionMusic.volumeDown),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      bouton(Icons.fast_rewind, 35, ActionMusic.rewind),
+                      bouton(
+                          isPlayed == true ? Icons.pause : Icons.play_arrow,
+                          35,
+                          isPlayed == true
+                              ? ActionMusic.pause
+                              : ActionMusic.play),
+                      bouton(Icons.fast_forward, 35, ActionMusic.forward),
+                    ],
                   ),
-                  textWithStyle("0:22", 1),
+                  bouton(Icons.volume_up, 30, ActionMusic.volumeUp),
                 ],
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                bouton(Icons.fast_rewind, 35, ActionMusic.rewind),
-                bouton(isPlayed == true ? Icons.pause : Icons.play_arrow, 35,
-                    isPlayed == true ? ActionMusic.pause : ActionMusic.play),
-                bouton(Icons.fast_forward, 35, ActionMusic.forward),
-              ],
-            ),
-          ],
+              SizedBox(
+                height: 50,
+                width: double.infinity,
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          child: Image.asset(
+                            _playing.imagePath,
+                            height: 50,
+                            width: 50,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        textWithStyle(_playing.artiste, 1.2, true),
+                      ],
+                    ),
+                    ElevatedButton(
+                      style: const ButtonStyle(
+                        alignment: Alignment.center,
+                      ),
+                    onPressed: (){},
+                    child: textWithStyle("Suivre", 1)) 
+                                  ],
+                                ),
+                  ))
+            ],
+          ),
         ),
       ),
     );
@@ -154,13 +199,51 @@ class _HomePageState extends State<HomePage> {
       textScaleFactor: scal,
       style: TextStyle(
         fontFamily: "Cambria",
-        color: Colors.cyan,
+        color: Colors.black87,
         fontWeight: isBold == true ? FontWeight.bold : FontWeight.normal,
       ),
     );
   }
 
-  IconButton bouton (IconData icone, double taille, ActionMusic actionMusic) {
+  void configurePlayer() {
+    player = AudioPlayer();
+    currentMusiqueIndex = 0;
+    positionPlay = const Duration(seconds: 0);
+    isPlayed = false;
+    _playing = listesMusiques[currentMusiqueIndex];
+    currentVolume = 0.8;
+    player.setVolume(currentVolume);
+  }
+
+  void play() {
+    isPlayed = !isPlayed;
+    player.setSource(AssetSource(_playing.urlSong));
+    player.resume();
+    logger.i("play ${_playing.urlSong}");
+  }
+
+  void pause() {
+    isPlayed = !isPlayed;
+    player.pause();
+  }
+
+  void forward() {
+    if (listesMusiques.length > currentMusiqueIndex) {
+      currentMusiqueIndex = currentMusiqueIndex + 1;
+      _playing = listesMusiques[currentMusiqueIndex];
+      play();
+    }
+  }
+
+  void rewind() {
+    if (currentMusiqueIndex != 0) {
+      currentMusiqueIndex = currentMusiqueIndex - 1;
+      _playing = listesMusiques[currentMusiqueIndex];
+      play();
+    }
+  }
+
+  IconButton bouton(IconData icone, double taille, ActionMusic actionMusic) {
     return IconButton(
         iconSize: taille,
         color: Colors.deepOrange,
@@ -169,28 +252,53 @@ class _HomePageState extends State<HomePage> {
             case ActionMusic.play:
               {
                 setState(() {
-                  isPlayed = !isPlayed;
+                  play();
                 });
-                player.setSourceUrl(_playing.urlSong);
-                logger.i("play ${_playing.urlSong}");
                 break;
               }
             case ActionMusic.pause:
               {
                 setState(() {
-                  isPlayed = !isPlayed;
+                  pause();
                 });
-                logger.i("pause");
                 break;
               }
             case ActionMusic.rewind:
               {
                 logger.i("rewind");
+                setState(() {
+                  rewind();
+                });
                 break;
               }
             case ActionMusic.forward:
               {
+                setState(() {
+                  forward();
+                });
                 logger.i("forward");
+                break;
+              }
+            case ActionMusic.volumeUp:
+              {
+                setState(() {
+                  double newVolume = currentVolume + 0.2;
+                  currentVolume = newVolume;
+                  player.setVolume(newVolume);
+                  logger.i("volume up ! $newVolume");
+                });
+                break;
+              }
+            case ActionMusic.volumeDown:
+              {
+                setState(() {
+                  if (currentVolume > 0.1) {
+                    double newVolume = currentVolume - 0.2;
+                    currentVolume = newVolume;
+                    player.setVolume(newVolume);
+                    logger.i("volume down ! $newVolume");
+                  }
+                });
                 break;
               }
           }

@@ -2,5 +2,7 @@ enum ActionMusic{
   play,
   pause,
   forward,
-  rewind
+  rewind,
+  volumeDown,
+  volumeUp
 }
