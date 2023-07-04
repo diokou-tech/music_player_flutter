@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late bool isPlayed;
   late Duration positionPlay;
+  late int currentIndexNavBar;
   var logger = Logger(
     printer: PrettyPrinter(
       printTime: true,
@@ -27,30 +28,59 @@ class _HomePageState extends State<HomePage> {
   List<Musique> listesMusiques = Faker.getMusiques();
   @override
   void initState() {
+    currentIndexNavBar = 0;
     super.initState();
     configurePlayer();
+  }
+
+  void changeIndexNavBar(int index) {
+    setState(() {
+      currentIndexNavBar = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actionsIconTheme: const IconThemeData(color: Colors.cyan),
-        iconTheme: const IconThemeData(color: Colors.cyan),
-        title: const Text(
-          "Ma Musique",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        automaticallyImplyLeading: false,
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "MUSIK",
+              style: TextStyle(
+                color: Colors.cyan,
+                fontFamily: "Cambria",
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              "SN",
+              style: TextStyle(
+                color: Colors.deepOrange,
+                fontFamily: "Cambria",
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
-        showUnselectedLabels: false,
-        // showSelectedLabels: false,
+        showUnselectedLabels: true,
+        unselectedItemColor: Colors.black,
         selectedItemColor: Colors.cyan,
-        currentIndex: 0,
+        currentIndex: currentIndexNavBar,
         elevation: 0.0,
+        onTap: changeIndexNavBar,
         type: BottomNavigationBarType.shifting,
         backgroundColor: Colors.cyan,
         items: const [
@@ -74,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                 Icons.search,
                 color: Colors.cyan,
               ),
-              label: "Feed"),
+              label: "Search"),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.library_music,
@@ -93,103 +123,132 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SingleChildScrollView(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Card(
-                  elevation: 0.8,
-                  child: Container(
-                      padding: const EdgeInsets.all(3),
-                      width: MediaQuery.of(context).size.height / 2.5,
-                      child: Image.asset(
-                        _playing.imagePath,
-                        fit: BoxFit.fitHeight,
-                      ))),
-              textWithStyle(_playing.titre, 2, true),
-              textWithStyle(_playing.artiste, 1.5, true),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    textWithStyle("0:0", 1),
-                    Expanded(
-                      child: Slider(
-                        activeColor: Colors.deepOrange,
-                        inactiveColor: Colors.cyan,
-                        value: positionPlay.inSeconds.toDouble(),
-                        onChanged: (value) {
-                          setState(() {
-                            positionPlay = Duration(seconds: value.toInt());
-                          });
-                          logger.d("$value playing");
-                        },
-                        max: 5,
-                        min: 0,
-                      ),
-                    ),
-                    textWithStyle("0:22", 1),
-                  ],
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  bouton(Icons.volume_down, 30, ActionMusic.volumeDown),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+          child: Container(
+            decoration: const BoxDecoration(
+              image:  DecorationImage(
+                image :  AssetImage("assets/images/wall-texture-background.jpg"),
+                fit: BoxFit.cover,
+                opacity: 0.3
+              )
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Card(
+                    elevation: 0.8,
+                    child: Container(
+                        padding: const EdgeInsets.all(3),
+                        width: MediaQuery.of(context).size.height / 2.5,
+                        child: imageorDefault(_playing.imagePath))),
+                textWithStyle(_playing.titre, 2, true),
+                textWithStyle(_playing.artiste, 1.5, true),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      bouton(Icons.fast_rewind, 35, ActionMusic.rewind),
-                      bouton(
-                          isPlayed == true ? Icons.pause : Icons.play_arrow,
-                          35,
-                          isPlayed == true
-                              ? ActionMusic.pause
-                              : ActionMusic.play),
-                      bouton(Icons.fast_forward, 35, ActionMusic.forward),
+                      textWithStyle("0:00", 1.05),
+                      Expanded(
+                        child: Slider(
+                          activeColor: Colors.deepOrange,
+                          inactiveColor: Colors.cyan,
+                          value: positionPlay.inSeconds.toDouble(),
+                          onChanged: (value) {
+                            setState(() {
+                              positionPlay = Duration(seconds: value.toInt());
+                            });
+                            logger.d("$value playing");
+                          },
+                          max: 5,
+                          min: 0,
+                        ),
+                      ),
+                      textWithStyle("0:22", 1.05),
                     ],
                   ),
-                  bouton(Icons.volume_up, 30, ActionMusic.volumeUp),
-                ],
-              ),
-              SizedBox(
-                height: 50,
-                width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    bouton(Icons.volume_down, 30, ActionMusic.volumeDown),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CircleAvatar(
-                          child: Image.asset(
-                            _playing.imagePath,
-                            height: 50,
-                            width: 50,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        textWithStyle(_playing.artiste, 1.2, true),
+                        bouton(Icons.fast_rewind, 35, ActionMusic.rewind),
+                        bouton(
+                            isPlayed == true ? Icons.pause : Icons.play_arrow,
+                            35,
+                            isPlayed == true
+                                ? ActionMusic.pause
+                                : ActionMusic.play),
+                        bouton(Icons.fast_forward, 35, ActionMusic.forward),
                       ],
                     ),
-                    ElevatedButton(
-                      style: const ButtonStyle(
-                        alignment: Alignment.center,
+                    bouton(Icons.volume_up, 30, ActionMusic.volumeUp),
+                  ],
+                ),
+                SizedBox(
+                    height: 50,
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.all(2),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 50,
+                                backgroundImage:
+                                    getImageorDefault(_playing.imagePath),
+                              ),
+                              textWithStyle(_playing.artiste, 1.2, true),
+                            ],
+                          ),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.cyan
+                            ),
+                            label: textWithStyle("Suivre", 1.1),
+                            onPressed: () {},
+                            icon: const Icon(Icons.add_circle),
+                          ),
+                        ],
                       ),
-                    onPressed: (){},
-                    child: textWithStyle("Suivre", 1)) 
-                                  ],
-                                ),
-                  ))
-            ],
+                    ))
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Widget imageorDefault(String path) {
+    try {
+      return Image.asset(
+        path,
+        fit: BoxFit.contain,
+        height: MediaQuery.of(context).size.height / 2.5,
+      );
+    } on Exception catch (e) {
+      logger.d(e);
+      return Image.asset(
+        "images/defaultImage.webp",
+        fit: BoxFit.contain,
+        height: MediaQuery.of(context).size.height / 2.5,
+      );
+    }
+  }
+
+  AssetImage getImageorDefault(String path) {
+    try {
+      return AssetImage(path);
+    } catch (e) {
+      logger.d(e);
+      return const AssetImage("images/defaultImage.webp");
+    }
   }
 
   Text textWithStyle(String data, double scal, [bool isBold = false]) {

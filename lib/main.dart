@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:musik_audiomack/ui/pages/home.page.dart';
-import 'package:musik_audiomack/ui/pages/about.page.dart';
+import 'package:musik_audiomack/ui/pages/library.page.dart';
 import 'package:musik_audiomack/ui/pages/login.page.dart';
 import 'package:musik_audiomack/ui/pages/playlist.page.dart';
 
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         "/home": (context) => const HomePage(),
-        "/about": (context) => const AboutPage(),
+        "/about": (context) => const LibraryPage(),
         "/playlist": (context) => const PlaylistPage()
       },
       theme: ThemeData(
