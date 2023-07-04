@@ -78,10 +78,10 @@ class LoginPage extends StatelessWidget {
                 AnimatedTextKit(
                   totalRepeatCount: 5,
                   animatedTexts: [
-                TypewriterAnimatedText('Plaisir'),
-                TypewriterAnimatedText('Voyage', cursor: '|'),
-                TypewriterAnimatedText('Découverte', cursor: '<|>'),
-                TypewriterAnimatedText('Vibrez', cursor: '💡'),
+                    TypewriterAnimatedText('Plaisir'),
+                    TypewriterAnimatedText('Voyage', cursor: '|'),
+                    TypewriterAnimatedText('Découverte', cursor: '<|>'),
+                    TypewriterAnimatedText('Vibrez', cursor: '💡'),
                   ],
                 )
               ],
