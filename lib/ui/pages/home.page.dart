@@ -41,87 +41,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "MUSIK",
-              style: TextStyle(
-                color: Colors.cyan,
-                fontFamily: "Cambria",
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              "SN",
-              style: TextStyle(
-                color: Colors.deepOrange,
-                fontFamily: "Cambria",
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-      ),
-      // backgroundColor: Colors.white,
-      bottomNavigationBar: BottomNavigationBar(
-        showUnselectedLabels: true,
-        unselectedItemColor: Colors.black,
-        selectedItemColor: Colors.cyan,
-        currentIndex: currentIndexNavBar,
-        elevation: 0.0,
-        onTap: changeIndexNavBar,
-        type: BottomNavigationBarType.shifting,
-        backgroundColor: Colors.cyan,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              color: Colors.cyan,
-            ),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-              tooltip: "Feed",
-              icon: Icon(
-                Icons.feed,
-                color: Colors.cyan,
-              ),
-              label: "Feed"),
-          BottomNavigationBarItem(
-              tooltip: "search",
-              icon: Icon(
-                Icons.search,
-                color: Colors.cyan,
-              ),
-              label: "Search"),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.library_music,
-              color: Colors.cyan,
-            ),
-            label: "My Library",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.music_note,
-              color: Colors.cyan,
-            ),
-            label: "Playlist",
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
+    var homeSection = SingleChildScrollView(
         child: Center(
           child: Container(
             decoration: const BoxDecoration(
@@ -221,7 +141,101 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+      );
+    var feedSection = Center(
+      child: Text("Feed", style: Theme.of(context).textTheme.headlineLarge,),
+    );
+    var searchSection = Center(
+      child: Text("Search", style: Theme.of(context).textTheme.headlineLarge,),
+    );
+    var librarySection = Center(
+      child: Text("library", style: Theme.of(context).textTheme.headlineLarge,),
+    );
+    var meSection = Center(
+      child: Text("Me", style: Theme.of(context).textTheme.headlineLarge,),
+    );
+    List<Widget> listesWidgets = [homeSection,feedSection,searchSection,librarySection,meSection];
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "MUSIK",
+              style: TextStyle(
+                color: Colors.cyan,
+                fontFamily: "Cambria",
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              "SN",
+              style: TextStyle(
+                color: Colors.deepOrange,
+                fontFamily: "Cambria",
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
       ),
+      // backgroundColor: Colors.white,
+      bottomNavigationBar: BottomNavigationBar(
+        showUnselectedLabels: true,
+        unselectedItemColor: Colors.black,
+        selectedItemColor: Colors.cyan,
+        currentIndex: currentIndexNavBar,
+        elevation: 0.0,
+        onTap: changeIndexNavBar,
+        type: BottomNavigationBarType.shifting,
+        backgroundColor: Colors.cyan,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: Colors.cyan,
+            ),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+              tooltip: "Feed",
+              icon: Icon(
+                Icons.feed,
+                color: Colors.cyan,
+              ),
+              label: "Feed"),
+          BottomNavigationBarItem(
+              tooltip: "search",
+              icon: Icon(
+                Icons.search,
+                color: Colors.cyan,
+              ),
+              label: "Search"),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.library_music,
+              color: Colors.cyan,
+            ),
+            label: "My Library",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.person,
+              color: Colors.cyan,
+            ),
+            label: "Me",
+          ),
+        ],
+      ),
+      body: listesWidgets[currentIndexNavBar],
     );
   }
 

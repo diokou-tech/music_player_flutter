@@ -24,7 +24,7 @@ class PlaylistPage extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          Text( 
                             "MUSIK",
                             style: TextStyle(
                               color: Colors.cyan,

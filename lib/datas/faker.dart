@@ -14,4 +14,4 @@ class Faker{
   static List<Musique> getMusiques(){
     return listesMusiques;
   }
-}
+}   
